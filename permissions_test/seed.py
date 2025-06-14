@@ -139,10 +139,12 @@ def seed_organizational_units():
 
 def seed_products():
     try:
+        t_janek = User.objects.get(username="t_janek")
         csharp_ou = OrganizationalUnit.objects.get(name="C#")
         linux_ou = OrganizationalUnit.objects.get(name="Linux Administration I")
         linux_advanced_ou = OrganizationalUnit.objects.get(name="Linux Administration II")
         phisics_ou = OrganizationalUnit.objects.get(name="Phisics")
+        java_ou = OrganizationalUnit.objects.get(name="Java")
     except ObjectDoesNotExist:
         print("⚠️ No organizational units found.")
         return
@@ -150,6 +152,7 @@ def seed_products():
     Product.objects.create(parent=linux_ou, name="Linux Basics", price=50.0)
     Product.objects.create(parent=linux_advanced_ou, name="Linux Advanced", price=75.0)
     Product.objects.create(parent=csharp_ou, name="CSharp", price=100.0)
+    Product.objects.create(parent=java_ou, name="Java", price=80.0, owner=t_janek)
 
 
 def seed_groups():
@@ -158,7 +161,7 @@ def seed_groups():
             {"model": Product, "codenames": ["view_product"]},
         ],
         "Leading teacher": [
-            {"model": Product, "codenames": ["view_product", "change_product"]},
+            {"model": Product, "codenames": ["view_product", "change_product", "owner_delete_product"]},
         ],
         "Mesh administrator": [
             {
@@ -182,6 +185,7 @@ def seed_user_groups():
         adm_maciek = User.objects.get(username="adm_maciek")
 
         csharp_ou = OrganizationalUnit.objects.get(name="C#")
+        java_ou = OrganizationalUnit.objects.get(name="Java")
         it_cathedral_ou = OrganizationalUnit.objects.get(name="IT Cathedral")
         it_faculty_ou = OrganizationalUnit.objects.get(name="IT Faculty")
         phisics_ou = OrganizationalUnit.objects.get(name="Phisics")
@@ -190,7 +194,7 @@ def seed_user_groups():
         return
     csharp_user_group = UserGroup.objects.create()
     csharp_user_group.users.set((teacher_janek,))
-    csharp_user_group.organizational_units.set((csharp_ou,))
+    csharp_user_group.organizational_units.set((csharp_ou, java_ou))
     csharp_user_group.permission_groups.set((leading_teacher_group,))
 
     it_cathedral_user_group = UserGroup.objects.create()

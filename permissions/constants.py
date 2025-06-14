@@ -2,25 +2,33 @@ from enum import Enum
 
 
 class PermissionSubType(str, Enum):
-    SCOPED = "scoped"
-    ALL_FIELDS = "fields"
     FIELD = "field"
+    ALL_FIELDS = "fields"
+    WEEKEND = "weekend"
+    OWNER = "owner"
 
 
 PERMISSION_SUBTYPES_LABELS = {
-    PermissionSubType.SCOPED: lambda action_value, model_name: f"Can {action_value} {model_name} only when user is in scope of organizational unit",
+    PermissionSubType.WEEKEND: lambda action_value,
+                                      model_name: f"Can {action_value} {model_name} only when it's weekend",
+    PermissionSubType.FIELD: lambda action_value, model_name,
+                                    field: f"Can {action_value} {field} field from {model_name} model",
+    PermissionSubType.OWNER: lambda action_value,
+                                    model_name: f"Can {action_value} {model_name} when user is assigned to owner field",
     PermissionSubType.ALL_FIELDS: lambda action_value, model_name: f"Can {action_value} all fields in {model_name}",
-    PermissionSubType.FIELD: lambda action_value, model_name, field: f"Can {action_value} {field} from {model_name} model",
 }
 
 PERMISSION_DIVIDER_BY_TYPES = {
     "olp": [
-        PermissionSubType.SCOPED,
-        PermissionSubType.ALL_FIELDS,
-        PermissionSubType.FIELD,
+        PermissionSubType.OWNER,
     ],
-    "regular": [],
-    "hardcoded": [],
+    "regular": [
+        PermissionSubType.FIELD,
+        PermissionSubType.ALL_FIELDS,
+    ],
+    "hardcoded": [
+        PermissionSubType.WEEKEND,
+    ],
 }
 
 

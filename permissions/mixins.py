@@ -52,6 +52,7 @@ class DecoratorAdminMixin:
 
 
 class BaseAdminMixin:
+    model = Type[Model]
 
     def has_add_permission(self, request):
         perm_service = PermissionService(request.user)
