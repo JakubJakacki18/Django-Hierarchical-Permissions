@@ -4,7 +4,7 @@ from enum import Enum
 class PermissionSubType(str, Enum):
     FIELD = "field"
     ALL_FIELDS = "fields"
-    WEEKEND = "weekend"
+    WEEKEND = "isWeekend"
     OWNER = "owner"
 
 

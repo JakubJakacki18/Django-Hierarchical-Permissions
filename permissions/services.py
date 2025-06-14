@@ -74,7 +74,8 @@ class PermissionService:
                 return True
         return False
 
-    def _is_permission_in_user_groups(self, permission, user_groups) -> bool:
+    @staticmethod
+    def _is_permission_in_user_groups(permission, user_groups) -> bool:
         """
         Check if permission is in any of user groups.
 
@@ -128,17 +129,22 @@ class PermissionService:
         permissions_dict = permissions_divider(*permissions)
         if self._regular_permissions_checker(permissions_dict.get("regular"), obj):
             print("Regular: ", True)
-
             return True
         if self._olp_permissions_checker(permissions_dict.get("olp"), obj):
             print("Olp: ", True)
             return True
+        if self._hardcoded_permissions_checker(permissions_dict.get("hardcoded"), obj):
+            print("Hardcoded: ", True)
+            return True
         print("has_perm_checker", False)
         return False
 
+    def _hardcoded_permissions_checker(self, permissions, obj):
+        return any(self.user.has_perm(permission, obj) for permission in permissions)
+
 
 class PermissionCreationService:
-    """Class responsible for checking permissions.    Permission Creation Service is used to create codenames and assign rules to permission"""
+    """Class responsible for checking permissions. Permission Creation Service is used to create codenames and assign rules to permission"""
 
     @staticmethod
     def create_crud_permissions_by_type(
@@ -179,7 +185,7 @@ class PermissionCreationService:
             assert KeyError(
                 "Key 'PermissionType.FIELD' doesn't exist in PERMISSION_TYPES_LABELS"
             )
-        model_name = model.__name__
+        model_name = model.__name__.lower()
         fields = [field.name for field in model._meta.get_fields()]
         permissions_list = []
         action_values = actions_to_list(Action.VIEW, Action.CHANGE)
@@ -188,7 +194,7 @@ class PermissionCreationService:
                 permissions_list.append(
                     tuple(
                         (
-                            f"fields_{field}_{action_value}_{model_name.lower()}",
+                            f"fields_{field}_{action_value}_{model_name}",
                             PERMISSION_SUBTYPES_LABELS[PermissionSubType.FIELD](
                                 action_value, model_name, field
                             ),
