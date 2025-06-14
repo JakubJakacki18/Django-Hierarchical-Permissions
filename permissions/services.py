@@ -142,6 +142,17 @@ class PermissionService:
     def _hardcoded_permissions_checker(self, permissions, obj):
         return any(self.user.has_perm(permission, obj) for permission in permissions)
 
+    def has_field_permission_checker(self, model, field_name, obj=None):
+        # Walidacja field_name do napisania
+        content_type = ContentType.objects.get_for_model(model)
+        view_permission, change_permission = (
+            self.has_perm_checker(obj,
+                                  f"{content_type.app_label}.{PermissionSubType.FIELD.value}_{field_name}_{action.value}_{model.__name__.lower()}", )
+            for action
+            in
+            (Action.VIEW, Action.CHANGE))
+        return view_permission, change_permission
+
 
 class PermissionCreationService:
     """Class responsible for checking permissions. Permission Creation Service is used to create codenames and assign rules to permission"""
@@ -194,7 +205,7 @@ class PermissionCreationService:
                 permissions_list.append(
                     tuple(
                         (
-                            f"fields_{field}_{action_value}_{model_name}",
+                            f"{PermissionSubType.FIELD.value}_{field}_{action_value}_{model_name}",
                             PERMISSION_SUBTYPES_LABELS[PermissionSubType.FIELD](
                                 action_value, model_name, field
                             ),
