@@ -9,7 +9,6 @@ from permissions.constants import (
 from permissions.utils import actions_to_list, permissions_divider
 from .models import UserGroup
 from django.contrib.contenttypes.models import ContentType
-from django.db import models
 
 
 # Class responsible for checking permissions
@@ -21,9 +20,9 @@ class PermissionService:
     def __init__(self, user: User):
         self.user = user
         self.user_groups = UserGroup.objects.filter(
-            assigned_users=user
+            users=user
         ).prefetch_related(
-            "assigned_permission_groups", "assigned_organizational_units"
+            "permission_groups", "organizational_units"
         )
 
     @staticmethod
@@ -68,8 +67,8 @@ class PermissionService:
         )
         for organizational_unit in list_of_organizational_units:
             user_groups = UserGroup.objects.filter(
-                assigned_users=self.user,
-                assigned_organizational_units=organizational_unit,
+                users=self.user,
+                organizational_units=organizational_unit,
             )
             if self._is_permission_in_user_groups(permission, user_groups):
                 return True
@@ -88,7 +87,7 @@ class PermissionService:
         """
         permission_groups_set = set()
         for user_group in user_groups:
-            permission_groups_set.update(user_group.assigned_permission_groups.all())
+            permission_groups_set.update(user_group.permission_groups.all())
         permissions_set = set()
         for group in permission_groups_set:
             perms = group.permissions.all()
@@ -206,7 +205,7 @@ class PermissionCreationService:
             f"{app_name}.{codename}",
             rule,
         )
-        return (codename, description)
+        return codename, description
 
     @staticmethod
     def add_rules_to_permissions(

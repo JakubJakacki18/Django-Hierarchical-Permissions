@@ -28,16 +28,16 @@ class OrganizationalUnit(MPTTModel):
 
 
 class UserGroup(models.Model):
-    assigned_organizational_units = models.ManyToManyField(
-        OrganizationalUnit, related_name="assigned_user_groups"
+    organizational_units = models.ManyToManyField(
+        OrganizationalUnit, related_name="user_groups"
     )
-    assigned_users = models.ManyToManyField(User, related_name="assigned_user_groups")
-    assigned_permission_groups = models.ManyToManyField(
-        Group, related_name="assigned_user_groups"
+    users = models.ManyToManyField(User, related_name="user_groups")
+    permission_groups = models.ManyToManyField(
+        Group, related_name="user_groups"
     )
 
 
-class Base(models.Model):
+class BaseModel(models.Model):
     parent = TreeForeignKey(
         "self", on_delete=models.CASCADE, null=True, blank=True, related_name="children"
     )
