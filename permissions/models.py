@@ -39,7 +39,7 @@ class UserGroup(models.Model):
 
 class BaseModel(models.Model):
     parent = TreeForeignKey(
-        "self", on_delete=models.CASCADE, null=True, blank=True, related_name="children"
+        "permissions.OrganizationalUnit", on_delete=models.CASCADE, null=True, blank=True
     )
 
     class Meta:
