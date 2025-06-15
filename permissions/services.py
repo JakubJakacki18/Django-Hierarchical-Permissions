@@ -65,8 +65,10 @@ class PermissionService:
         """Check if user has permission in any of his user groups in scope of organizational units"""
         parent_organizational_unit = obj.parent
         list_of_organizational_units = parent_organizational_unit.get_ancestors(
-            include_self=True, ascending=True
+            ascending=True
         )
+        # In test method get_ancestors() with include_self=True doesn't work
+        list_of_organizational_units = [parent_organizational_unit] + list(list_of_organizational_units)
         for organizational_unit in list_of_organizational_units:
             user_groups = UserGroup.objects.filter(
                 users=self.user,
@@ -125,10 +127,10 @@ class PermissionService:
         return self.has_perm_checker(obj, *all_permissions_for_model)
 
     def has_perm_checker(self, obj, *permissions):
-        # print("Permissions has perm checker:", permissions)
         if self.user.is_superuser:
             return True
         permissions_dict = permissions_divider(*permissions)
+        # print("permission_dict: ", permissions_dict)
         if self._regular_permissions_checker(permissions_dict.get("regular"), obj):
             print("Regular: ", True)
             return True
