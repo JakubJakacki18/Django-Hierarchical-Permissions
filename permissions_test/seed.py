@@ -83,8 +83,8 @@ def seed_organizational_units():
         parent=mech_faculty,
         type="CATHEDRAL",
     )
-    phisics_cathedral = OrganizationalUnit.objects.create(
-        name="Phisics Cathedral",
+    physics_cathedral = OrganizationalUnit.objects.create(
+        name="Physics Cathedral",
         parent=mech_faculty,
         type="CATHEDRAL",
     )
@@ -131,8 +131,8 @@ def seed_organizational_units():
         type="GROUP",
     )
     OrganizationalUnit.objects.create(
-        name="Phisics",
-        parent=phisics_cathedral,
+        name="Physics",
+        parent=physics_cathedral,
         type="GROUP",
     )
 
@@ -143,12 +143,12 @@ def seed_products():
         csharp_ou = OrganizationalUnit.objects.get(name="C#")
         linux_ou = OrganizationalUnit.objects.get(name="Linux Administration I")
         linux_advanced_ou = OrganizationalUnit.objects.get(name="Linux Administration II")
-        phisics_ou = OrganizationalUnit.objects.get(name="Phisics")
+        physics_ou = OrganizationalUnit.objects.get(name="Physics")
         java_ou = OrganizationalUnit.objects.get(name="Java")
     except ObjectDoesNotExist:
         print("⚠️ No organizational units found.")
         return
-    Product.objects.create(parent=phisics_ou, name="Phisics", price=50.0)
+    Product.objects.create(parent=physics_ou, name="Physics", price=50.0)
     Product.objects.create(parent=linux_ou, name="Linux Basics", price=50.0)
     Product.objects.create(parent=linux_advanced_ou, name="Linux Advanced", price=75.0)
     Product.objects.create(parent=csharp_ou, name="CSharp", price=100.0)
@@ -158,15 +158,17 @@ def seed_products():
 def seed_groups():
     group_permissions = {
         "Teacher": [
-            {"model": Product, "codenames": ["view_product"]},
+            {"model": Product, "codenames": ["view_product", "field_name_view_product"]},
         ],
         "Leading teacher": [
-            {"model": Product, "codenames": ["view_product", "change_product", "owner_delete_product"]},
+            {"model": Product,
+             "codenames": ["view_product", "change_product", "owner_delete_product", "field_owner_view_product",
+                           "field_name_change_product"]},
         ],
         "Mesh administrator": [
             {
                 "model": Product,
-                "codenames": ["view_product", "change_product", "delete_product"],
+                "codenames": ["view_product", "change_product", "delete_product", "field_id_view_product"],
             },
         ],
     }
@@ -188,7 +190,7 @@ def seed_user_groups():
         java_ou = OrganizationalUnit.objects.get(name="Java")
         it_cathedral_ou = OrganizationalUnit.objects.get(name="IT Cathedral")
         it_faculty_ou = OrganizationalUnit.objects.get(name="IT Faculty")
-        phisics_ou = OrganizationalUnit.objects.get(name="Phisics")
+        physics_ou = OrganizationalUnit.objects.get(name="Physics")
     except ObjectDoesNotExist:
         print("⚠️ Something was not found")
         return
@@ -212,7 +214,7 @@ def seed_user_groups():
     it_faculty_user_group.organizational_units.set((it_faculty_ou,))
     it_faculty_user_group.permission_groups.set((mesh_administrator_group,))
 
-    phisical_cathedral_user_group = UserGroup.objects.create()
-    phisical_cathedral_user_group.users.set((teacher_piotrek, teacher_janek))
-    phisical_cathedral_user_group.organizational_units.set((phisics_ou,))
-    phisical_cathedral_user_group.permission_groups.set((teacher_group,))
+    physical_cathedral_user_group = UserGroup.objects.create()
+    physical_cathedral_user_group.users.set((teacher_piotrek, teacher_janek))
+    physical_cathedral_user_group.organizational_units.set((physics_ou,))
+    physical_cathedral_user_group.permission_groups.set((teacher_group,))

@@ -26,12 +26,14 @@ class PermissionService:
         )
 
     @staticmethod
-    def get_all_permissions_for_model(model, action=None):
+    def get_all_permissions_for_model(model, fields_included=False, action=None):
         """Get all permissions for model. Use ``action`` argument to filter all permissions"""
         content_type = ContentType.objects.get_for_model(model)
         permissions = Permission.objects.filter(content_type=content_type)
         if action:
             permissions = permissions.filter(codename__contains=action.value)
+        if not fields_included:
+            permissions = permissions.exclude(codename__startswith=PermissionSubType.FIELD.value)
         return [
             f"{content_type.app_label}.{permission.codename}"
             for permission in permissions
@@ -112,20 +114,20 @@ class PermissionService:
         )
 
     def has_perm_to_action(self, model, action: Action, obj=None):
-        if self.user.is_superuser:
-            return True
         # print("------------------------------------\n")
         # print("Model", model)
         # print("Obj", obj)
         # print("Action", action)
         # print("------------------------------------\n")
         all_permissions_for_model = PermissionService.get_all_permissions_for_model(
-            model, action
+            model, False, action
         )
         return self.has_perm_checker(obj, *all_permissions_for_model)
 
     def has_perm_checker(self, obj, *permissions):
         # print("Permissions has perm checker:", permissions)
+        if self.user.is_superuser:
+            return True
         permissions_dict = permissions_divider(*permissions)
         if self._regular_permissions_checker(permissions_dict.get("regular"), obj):
             print("Regular: ", True)
